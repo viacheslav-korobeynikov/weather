@@ -17,17 +17,18 @@ func GetMyLocation(city string) (*GeoData, error) {
 			City: city,
 		}, nil
 	}
+	ipapiClient := http.Client{}
 	// Делаем запрос GET
-	response, err := http.Get("https://ipapi.co/json/")
-	if err != nil {
-		return nil, err
-	}
+	req, err := http.NewRequest("GET", "https://ipapi.co/json/", nil)
+	req.Header.Set("User-Agent", "ipapi.co/#go-v1.5")
+	resp, err := ipapiClient.Do(req)
 	// Проверяем статус код
-	if response.StatusCode != 200 {
+	if resp.StatusCode != 200 {
 		return nil, errors.New("NOT_200")
 	}
+	defer resp.Body.Close()
 	// Читаем тело ответа
-	body, err := io.ReadAll(response.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}

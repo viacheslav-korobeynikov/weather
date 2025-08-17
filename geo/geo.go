@@ -16,11 +16,14 @@ type CityResponse struct {
 	Error bool `json:"error"`
 }
 
+var ErrorNoCity = errors.New("NO_CITY")
+var ErrorNot200 = errors.New("NOT_200")
+
 func GetMyLocation(city string) (*GeoData, error) {
 	if city != "" {
 		isCity := checkCity(city)
 		if !isCity {
-			panic("Такого города нет")
+			return nil, ErrorNoCity
 		}
 		return &GeoData{
 			City: city,
@@ -28,12 +31,19 @@ func GetMyLocation(city string) (*GeoData, error) {
 	}
 	ipapiClient := http.Client{}
 	// Делаем запрос GET
+
 	req, err := http.NewRequest("GET", "https://ipapi.co/json/", nil)
+	if err != nil {
+		return nil, err
+	}
 	req.Header.Set("User-Agent", "ipapi.co/#go-v1.5")
 	resp, err := ipapiClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
 	// Проверяем статус код
 	if resp.StatusCode != 200 {
-		return nil, errors.New("NOT_200")
+		return nil, ErrorNot200
 	}
 	defer resp.Body.Close()
 	// Читаем тело ответа
@@ -51,7 +61,7 @@ func checkCity(city string) bool {
 	postBody, _ := json.Marshal(map[string]string{
 		"city": city,
 	})
-	resp, err := http.Post("https://countriesnow.space/api/v0.1/countires/population/cities", "application/json", bytes.NewBuffer(postBody))
+	resp, err := http.Post("https://countriesnow.space/api/v0.1/countries/population/cities", "application/json", bytes.NewBuffer(postBody))
 	if err != nil {
 		return false
 	}

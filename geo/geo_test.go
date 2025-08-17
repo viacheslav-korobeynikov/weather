@@ -27,8 +27,11 @@ func TestGetMyLocation(t *testing.T) {
 
 // Негативный тест
 func TestGetMyLocationNoCity(t *testing.T) {
+	// Arrange - подготовка (ОР) данные для проверки
 	city := "Londonasdfad"
+	// Act - выполняем функцию
 	_, err := geo.GetMyLocation(city)
+	// Assert - проверка результата (ФР)
 	if err != geo.ErrorNoCity {
 		t.Errorf("Ожидалось %v, получено %v", geo.ErrorNoCity, err)
 	}

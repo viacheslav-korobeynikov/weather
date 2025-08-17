@@ -5,11 +5,12 @@ import (
 	"fmt"
 
 	"github.com/viacheslav-korobeynikov/weather/geo"
+	"github.com/viacheslav-korobeynikov/weather/weather"
 )
 
 func main() {
 	city := flag.String("city", "", "Город пользователя")
-	//format := flag.Int("format", 1, "Формат вывода погоды")
+	format := flag.Int("format", 1, "Формат вывода погоды")
 
 	flag.Parse()
 
@@ -19,5 +20,6 @@ func main() {
 		fmt.Println(err.Error())
 	}
 	fmt.Println(geoData)
-
+	weatherData := weather.GetWeather(*geoData, *format)
+	fmt.Println(weatherData)
 }
